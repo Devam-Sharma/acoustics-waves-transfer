@@ -1,0 +1,24 @@
+import wave
+import numpy as np
+from PIL import Image
+
+# Load the captured audio file
+captured_audio_filename = "captured_audio.wav"
+wf = wave.open(captured_audio_filename, 'rb')
+
+# Read the audio frames (binary data)
+audio_data = np.frombuffer(wf.readframes(wf.getnframes()), dtype=np.int16)
+
+# Normalize the data back to the original range (0-255 for grayscale)
+normalized_data = np.interp(audio_data, (audio_data.min(), audio_data.max()), (0, 255))
+
+# Reshape the data to the original image dimensions (for example, 28x28 pixels)
+# You need to know the shape of your original image (e.g., 28x28 pixels for a 1-channel grayscale image)
+image_shape = (256, 256)  # Adjust this based on the dimensions of your image
+image_array = normalized_data[:image_shape[0] * image_shape[1]].reshape(image_shape)
+
+# Convert the array back to an image
+reconstructed_image = Image.fromarray(image_array.astype(np.uint8))
+
+# Show the reconstructed image
+reconstructed_image.show()
